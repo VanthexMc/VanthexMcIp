@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Il tuo IP · VanthexMc</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <style>
+    :root {
+      --bg: #0F0A1A;
+      --card: #1A0B2E;
+      --line: #4C1D95;
+      --purple: #8B5CF6;
+      --purple-light: #C084FC;
+      --text: #ffffff;
+      --muted: #E0D4FF;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      line-height: 1.55;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: "";
+      position: absolute;
+      top: -120px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 640px;
+      height: 520px;
+      max-width: 100%;
+      border-radius: 50%;
+      background: rgba(76, 29, 149, 0.28);
+      filter: blur(130px);
+      pointer-events: none;
+    }
+    main {
+      position: relative;
+      flex: 1;
+      width: 100%;
+      max-width: 560px;
+      margin: 0 auto;
+      padding: 40px 20px 24px;
+      text-align: center;
+    }
+    .logo {
+      width: 220px;
+      height: 220px;
+      object-fit: contain;
+      mix-blend-mode: screen;
+      filter: drop-shadow(0 0 32px rgba(139, 92, 246, 0.45));
+    }
+    .kicker {
+      margin: 4px 0 0;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      color: var(--purple-light);
+      text-transform: uppercase;
+    }
+    h1 { margin: 10px 0 0; font-size: clamp(34px, 8vw, 48px); font-weight: 800; }
+    h1 span { color: var(--purple-light); }
+    .lead { margin: 16px 0 28px; color: var(--muted); }
+    .card {
+      background: rgba(26, 11, 46, 0.75);
+      border: 1px solid rgba(76, 29, 149, 0.6);
+      border-radius: 18px;
+      padding: 22px 20px;
+      margin-bottom: 14px;
+    }
+    .card h2 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--purple-light);
+    }
+    .ip {
+      margin: 6px 0 14px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: clamp(22px, 6vw, 32px);
+      font-weight: 700;
+      word-break: break-all;
+      user-select: all;
+    }
+    .status { color: var(--muted); padding: 10px 0; }
+    .spinner {
+      display: inline-block;
+      width: 16px; height: 16px;
+      margin-right: 8px;
+      vertical-align: -2px;
+      border: 2px solid rgba(192, 132, 252, 0.3);
+      border-top-color: var(--purple-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn {
+      appearance: none;
+      border: 1px solid var(--purple);
+      background: var(--purple);
+      color: #fff;
+      font: inherit;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.05s;
+    }
+    .btn:hover { background: #7C3AED; }
+    .btn:active { transform: translateY(1px); }
+    .btn:focus-visible { outline: 2px solid var(--purple-light); outline-offset: 2px; }
+    .btn.ghost { background: transparent; color: var(--muted); border-color: var(--line); }
+    .btn.ghost:hover { background: rgba(76, 29, 149, 0.3); }
+    .btn:disabled { opacity: 0.55; cursor: not-allowed; }
+    .actions { margin-top: 18px; }
+    .note {
+      margin-top: 22px;
+      padding: 14px 16px;
+      text-align: left;
+      font-size: 14px;
+      color: rgba(224, 212, 255, 0.8);
+      background: rgba(26, 11, 46, 0.4);
+      border: 1px solid rgba(76, 29, 149, 0.4);
+      border-radius: 12px;
+    }
+    footer { position: relative; padding: 20px; text-align: center; font-size: 13px; color: rgba(224, 212, 255, 0.55); }
+    footer a { color: var(--purple-light); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+  <main>
+    <img class="logo" src="logo.webp" alt="VanthexMc" />
+    <p class="kicker">VanthexMc</p>
+    <h1>Il tuo <span>IP</span></h1>
+    <p class="lead">
+      Lo staff ti ha chiesto il tuo indirizzo IP? Copialo da qui e incollalo nel ticket, premendo il
+      pulsante <strong>Invia IP</strong>.
+    </p>
+
+    <div id="loading" class="card status" role="status">
+      <span class="spinner" aria-hidden="true"></span>Sto leggendo il tuo indirizzo...
+    </div>
+
+    <div id="results" aria-live="polite"></div>
+
+    <div id="error" class="card status" hidden>
+      Non riesco a leggere il tuo IP. Se hai un blocco pubblicità o privacy attivo, disattivalo per questa
+      pagina e riprova.
+    </div>
+
+    <div class="actions">
+      <button id="reload" class="btn ghost" type="button">Ricarica</button>
+    </div>
+
+    <p class="note">
+      L'indirizzo viene letto dal tuo browser tramite il servizio api.ipify.org: questo sito non lo salva.
+      Condividilo solo con lo staff, nel tuo ticket. Se usi una VPN o un proxy, qui vedrai l'IP della VPN.
+    </p>
+  </main>
+
+  <footer>VanthexMc · <a href="https://discord.gg/uggeCGqbJt" target="_blank" rel="noopener">Discord</a></footer>
+
+  <script>
+    (function () {
+      var loading = document.getElementById("loading");
+      var results = document.getElementById("results");
+      var errorBox = document.getElementById("error");
+      var reloadBtn = document.getElementById("reload");
+
+      // IPv4 e IPv6 vengono letti separatamente: allo staff serve di solito l'IPv4.
+      var SOURCES = [
+        { label: "IPv4", url: "https://api.ipify.org?format=json" },
+        { label: "IPv6", url: "https://api6.ipify.org?format=json" }
+      ];
+
+      function fetchIp(url) {
+        var ctrl = new AbortController();
+        var timer = setTimeout(function () { ctrl.abort(); }, 8000);
+        return fetch(url, { signal: ctrl.signal })
+          .then(function (res) { if (!res.ok) throw new Error("http"); return res.json(); })
+          .then(function (data) { if (!data || typeof data.ip !== "string") throw new Error("dati"); return data.ip; })
+          .finally(function () { clearTimeout(timer); });
+      }
+
+      function copyText(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function (resolve) {
+          var ta = document.createElement("textarea");
+          ta.value = text;
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand("copy");
+          document.body.removeChild(ta);
+          resolve();
+        });
+      }
+
+      function addCard(label, ip) {
+        var card = document.createElement("div");
+        card.className = "card";
+
+        var h = document.createElement("h2");
+        h.textContent = label;
+
+        var p = document.createElement("p");
+        p.className = "ip";
+        p.textContent = ip;
+
+        var btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn";
+        btn.textContent = "Copia IP";
+        btn.addEventListener("click", function () {
+          copyText(ip).then(function () {
+            btn.textContent = "Copiato!";
+            setTimeout(function () { btn.textContent = "Copia IP"; }, 2000);
+          });
+        });
+
+        card.appendChild(h);
+        card.appendChild(p);
+        card.appendChild(btn);
+        results.appendChild(card);
+      }
+
+      function load() {
+        loading.hidden = false;
+        errorBox.hidden = true;
+        results.textContent = "";
+        reloadBtn.disabled = true;
+
+        Promise.allSettled(SOURCES.map(function (s) { return fetchIp(s.url); })).then(function (out) {
+          var found = 0;
+          out.forEach(function (r, i) {
+            if (r.status === "fulfilled") { addCard(SOURCES[i].label, r.value); found++; }
+          });
+          loading.hidden = true;
+          errorBox.hidden = found > 0;
+          reloadBtn.disabled = false;
+        });
+      }
+
+      reloadBtn.addEventListener("click", load);
+      load();
+    })();
+  </script>
+</body>
+</html>
